@@ -1,0 +1,1 @@
+STORAGE_PATH = "C:\\Temp\\Contacts\\"
