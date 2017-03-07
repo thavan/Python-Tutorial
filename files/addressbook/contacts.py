@@ -4,23 +4,26 @@ import pickle
 import uuid
 
 
-class Contact:
-    def __init__(self, id, first_name, last_name, phone_numbers, email, **other_info):
+class Contact(object):
+    def __init__(self, id=None, first_name='', last_name='', phone_number='', 
+                    dob=None, address='', email='', other_info=[]):
         if id is None:
             self.id = uuid.uuid4()
         self.first_name = first_name
         self.last_name = last_name
-        self.phone_numbers = phone_numbers
+        self.phone_number = phone_number
+        self.dob = dob
+        self.address = address
         self.email = email
-        self.other_info.extend(other_info)
+        self.other_info = other_info
 
     def __repr__(self):
-        return self.contact_info.first_name, self.contact_info.last_name
+        return self.first_name + ' ' + self.last_name
 
     def save(self):
-        save_string = pickle.dumps(self)
-        with open(os.path.join(config.STORAGE_PATH, self.id + '.con'), 'w') as f:
-            f.write(save_string)
+        """Saves the contact in disk"""
+        with open(os.path.join(config.STORAGE_PATH, str(self.id) + '.obj'), 'wb') as f:
+            f.write(pickle.dumps(self))
 
 
 class ContactManager():
@@ -28,10 +31,12 @@ class ContactManager():
         self.contacts = []
 
     def read_contacts(self):
+        """Returns list of contacts. Contacts are in the
+        form of dictionary."""
         contacts = []
         all_files = os.listdir(config.STORAGE_PATH)
         for f in all_files:
-            with open(f) as cf:
+            with open(os.path.join(config.STORAGE_PATH, f), 'rb') as cf:
                 contact = pickle.loads(cf.read())
                 contacts.append(contact)
         return contacts
