@@ -1,7 +1,5 @@
-import pickle
-
 from PyQt5.QtCore import QFile, QIODevice, Qt, QTextStream
-from PyQt5.QtWidgets import (QDialog, QFileDialog, QGridLayout, QHBoxLayout,
+from PyQt5 import QtWidgets import (QDialog, QGridLayout, QHBoxLayout,
         QLabel, QLineEdit, QMessageBox, QPushButton, QTextEdit, QVBoxLayout,
         QWidget, QListWidget, QListWidgetItem)
 from PyQt5.QtGui import QIcon
@@ -10,13 +8,9 @@ from contacts import ContactManager
 
 
 class AddressBook(QWidget):
-    NavigationMode, AddingMode, EditingMode = range(3)
 
     def __init__(self, parent=None):
         super(AddressBook, self).__init__(parent)
-        self.contact_id = None
-        self.phone_numbers = []
-        self.other_fields = []
 
         namelist_widget = QListWidget()
         self.cm = ContactManager()
