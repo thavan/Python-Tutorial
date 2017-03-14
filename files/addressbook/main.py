@@ -1,9 +1,12 @@
+import csv
+
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QIcon
 
 from contacts import ContactManager, Contact
 
+import utils
 
 class AddressBook(QtWidgets.QWidget):
 
@@ -52,6 +55,9 @@ class AddressBook(QtWidgets.QWidget):
         self.address = QtWidgets.QTextEdit()
 
         self.save_button = QtWidgets.QPushButton("&Save")
+        self.export_csv_button = QtWidgets.QPushButton("&Export CSV")
+
+        self.status_bar = QtWidgets.QLabel('Loaded...')
 
         contact_info_layout = QtWidgets.QGridLayout()
         contact_info_layout.addWidget(self.first_name_label, 0, 0)
@@ -67,17 +73,20 @@ class AddressBook(QtWidgets.QWidget):
 
         contact_info_layout.addWidget(self.address_label, 5, 0, Qt.AlignTop)
         contact_info_layout.addWidget(self.address, 5, 1)
-        contact_info_layout.addWidget(self.save_button, 6, 1)
-
+        contact_info_layout.addWidget(self.save_button, 6, 0)
+        contact_info_layout.addWidget(self.export_csv_button, 6, 1)
 
         self.mainLayout = QtWidgets.QGridLayout()
         self.mainLayout.addLayout(contact_list_layout, 0, 0)
         self.mainLayout.addLayout(contact_info_layout, 0, 1)
+        self.mainLayout.addWidget(self.status_bar, 1, 0)
 
         # event handling
         self.namelist_widget.itemClicked.connect(self.name_selected)
         self.save_button.clicked.connect(self.save_contact)
         self.search_field.textChanged.connect(self.search_field_changed)
+        self.new_address.clicked.connect(self.add_new_address)
+        self.export_csv_button.clicked.connect(self.export_to_csv)
 
         self.setLayout(self.mainLayout)
         self.setWindowTitle("Address Book")
@@ -101,14 +110,62 @@ class AddressBook(QtWidgets.QWidget):
         self.dob.setText(self.current_contact.dob)
         self.address.setText(self.current_contact.address)
 
+    def build_input_dict(self):
+        i_dict = {
+            'first_name': self.first_name.text(),
+            'last_name': self.last_name.text(),
+            'phone_number': self.phone_number.text(),
+            'dob': self.dob.text(),
+            'email': self.email.text(),
+            'address': self.address.toPlainText(),
+        }
+        return i_dict
+
     def save_contact(self):
-        self.current_contact.first_name = self.first_name.text()
-        self.current_contact.last_name = self.last_name.text()
-        self.current_contact.phone_number = self.phone_number.text()
-        self.current_contact.email = self.email.text()
-        self.current_contact.dob = self.dob.text()
-        self.current_contact.address = self.address.toPlainText()
-        self.current_contact.save()
+        input_dict = self.build_input_dict()
+        error = utils.validate_fields(input_dict)
+        if not error:
+            new_contact = False
+            if self.current_contact == None:
+                new_contact = True
+                self.current_contact = Contact()
+            self.current_contact.first_name = self.first_name.text()
+            self.current_contact.last_name = self.last_name.text()
+            self.current_contact.phone_number = self.phone_number.text()
+            self.current_contact.email = self.email.text()
+            self.current_contact.dob = self.dob.text()
+            self.current_contact.address = self.address.toPlainText()
+            self.current_contact.save()
+            if new_contact:
+                citem = QtWidgets.QListWidgetItem()
+                citem.contact_id = self.current_contact.contact_id
+                citem.setText('{} {}'.format(self.current_contact.first_name, self.current_contact.last_name))
+                self.namelist_widget.addItem(citem)
+                self.cm.contacts[self.current_contact.contact_id] = self.current_contact
+            self.status_bar.setText('Contact saved.')    
+        else:
+            self.status_bar.setText(error)
+
+
+    def add_new_address(self):
+        self.current_contact = None
+        self.first_name.setText('')
+        self.last_name.setText('')
+        self.phone_number.setText('')
+        self.email.setText('')
+        self.dob.setText('')
+        self.address.setText('')
+        self.status_bar.setText('Please fill new contact information')
+
+    def export_to_csv(self):
+        """Exports contacts to csv"""
+        with open('C:\\Temp\\Contacts\\export.csv', 'w') as fobj:
+            writer = csv.writer(fobj)
+            for contact_id, contact in self.cm.contacts.items():
+                row = [contact.first_name, contact.last_name, contact.dob,
+                        contact.email, contact.address]
+                writer.writerow(row)
+        self.status_bar.setText('Exported to export.csv')
 
 if __name__ == '__main__':
     import sys

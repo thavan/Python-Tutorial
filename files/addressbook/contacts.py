@@ -15,6 +15,9 @@ class Contact(object):
         self.dob = dob
         self.address = address
 
+    def __repr__(self):
+        return self.first_name + ' ' + self.last_name
+
     def save(self):
         """Saves the contact in disk"""
         with open(os.path.join(config.STORAGE_PATH, self.contact_id + '.obj'), 'wb') as f:
@@ -32,8 +35,11 @@ class ContactManager():
         all_files = os.listdir(config.STORAGE_PATH)
         for f in all_files:
             with open(os.path.join(config.STORAGE_PATH, f), 'rb') as cf:
-                contact = pickle.load(cf)
-                self.contacts[contact.contact_id] = contact
+                try:
+                    contact = pickle.load(cf)
+                    self.contacts[contact.contact_id] = contact
+                except Exception as e:
+                    print('Invalid file {} {}'.format(f, e))
         return self.contacts
 
 if __name__ == '__main__':
