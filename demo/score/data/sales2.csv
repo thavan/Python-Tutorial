@@ -1,9 +1,9 @@
 name,date,sold,price
-"Apples","Dec 11, 2012",50,9.5
-"Oranges","Dec 11, 2012",40,7.5
-"Bananas","Dec 11, 2012",60,9.9
-"Grapes","Dec 11, 2012",50,7.0
-"Apples","Dec 11, 2012",60,9.0
-"Oranges","Dec 11, 2012",40,7.5
-"Apples","Dec 11, 2012",60,8.5
-"Oranges","Dec 11, 2012",30,7.5
+"Apple","Dec 11, 2012",50,9.5
+"Orange","Dec 11, 2012",40,7.5
+"Banana","Dec 11, 2012",60,9.9
+"Pineapple","Dec 11, 2012",50,7.0
+"Apple","Dec 11, 2012",60,9.0
+"Orange","Dec 11, 2012",40,7.5
+"Apple","Dec 11, 2012",60,8.5
+"Orange","Dec 11, 2012",30,7.5
