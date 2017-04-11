@@ -1,4 +1,4 @@
-name,date,sold,price
+name,date,count,price
 "Apple","Dec 11, 2012",50,9.5
 "Orange","Dec 11, 2012",40,7.5
 "Banana","Dec 11, 2012",60,9.9
